@@ -1,0 +1,303 @@
+/* ===== GLOBAL SETTINGS ===== */
+body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; padding-bottom: 100px; }
+* { box-sizing: border-box; }
+
+/* ===== BANNER ===== */
+.main-banner { background: #0f172a; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #f59e0b; }
+.main-banner h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
+.main-banner p { margin: 5px 0 0; color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; }
+
+/* ===== STICKY HEADER ===== */
+.sticky-controls {
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(5px);
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    z-index: 100;
+    
+    /* ADD THESE TWO LINES */
+    max-width: 600px;  /* Matches your .card-container */
+    margin: 0 auto;    /* Centers the bar on the screen */
+    width: 100%;       /* Ensures it takes full width on small phones */
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+    /* ADD THIS LINE */
+    min-width: 0;      /* Prevents the input from pushing past the box in Flexbox */
+}
+.btn-reset-mini { padding: 0 15px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; cursor: pointer; color: #64748b; font-size: 0.8rem; }
+
+/* ===== FILTERS (CHIPS) ===== */
+.filter-section { margin-bottom: 10px; }
+.filter-label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; margin-bottom: 5px; letter-spacing: 0.5px; }
+.chip-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.chip-container::-webkit-scrollbar { display: none; }
+
+.chip { background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; white-space: nowrap; cursor: pointer; border: 1px solid transparent; font-weight: 600; color: #475569; }
+.chip.active { background: #0f172a; color: white; border-color: #0f172a; }
+
+/* ===== CARD CONTAINER ===== */
+.card-container { padding: 15px; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+
+/* ===== STUDENT CARD (LAYOUT RESTORED) ===== */
+.student-card {
+  display: flex;           /* Horizontal Layout */
+  align-items: center;     /* Vertically Center */
+  background: white;
+  padding: 10px;
+  border-radius: 12px;     /* Rounded Card */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.1s ease;
+  gap: 12px;               /* Space between image and text */
+}
+
+.student-card:active { transform: scale(0.98); }
+
+/* STATUS COLORS */
+.student-card.selected { border-color: #10b981; background: #ecfdf5; }
+.student-card.reserved { border-color: #f59e0b; background: #fffbeb; }
+
+/* IMAGE (ROUNDED SQUARE) */
+.student-image {
+  width: 65px;
+  height: 65px;
+  border-radius: 10px;     /* Rounded Square */
+  object-fit: cover;
+  background: #e2e8f0;
+  flex-shrink: 0;
+}
+
+/* TEXT DETAILS (ON RIGHT) */
+.card-info { flex: 1; overflow: hidden; }
+.nickname { font-weight: 800; font-size: 1rem; color: #0f172a; line-height: 1.1; }
+.realname { font-size: 0.75rem; color: #64748b; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.class-unit { font-size: 0.7rem; color: #94a3b8; font-weight: 700; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ===== BOTTOM BAR ===== */
+.bottom-action-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: white; padding: 12px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid #e2e8f0; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+  z-index: 200;
+}
+
+.status-summary { display: flex; gap: 15px; }
+.status-group { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.status-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
+.status-circle.available { border: 2px solid #cbd5e1; color: #64748b; }
+.status-circle.selected { background: #10b981; color: white; }
+.status-circle.reserved { background: #f59e0b; color: white; }
+.status-label { font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+
+.btn-summary { background: #0f172a; color: white; text-decoration: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; }
+
+/* ===== SUMMARY PAGE UTILS ===== */
+.stat-box { background: white; padding: 15px; border-radius: 8px; border-top: 4px solid #094692; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+.stat-box.mini { padding: 8px; font-size: 1rem; }
+.stat-number { display: block; font-size: 1.4rem; font-weight: 800; }
+.stat-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: bold; }
+.stats-grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+.stats-grid-4-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+
+.section-title {
+    font-size: 1.25rem;           /* Slightly larger for center visibility */
+    font-weight: 800;
+    color: #64748b;              /* Slate-grey vibes */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 40px auto 25px auto; /* 'auto' left/right centers the block */
+    text-align: center;          /* Centers the actual text */
+    display: flex;
+    flex-direction: column;      /* Puts the line underneath */
+    align-items: center;         /* Centers the line relative to text */
+}
+
+/* The Custom Underline */
+.section-title::after {
+    content: "";
+    width: 220px;                 /* Length of the underline */
+    height: 3px;                 /* Thickness of the underline */
+    background: #0f172a;         /* Matches your dark navy header/buttons */
+    margin-top: 10px;            /* Space between text and line */
+    border-radius: 2px;          /* Smooth edges */
+}
+
+/* Container for the bars */
+#ageBreakdownContainer {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.breakdown-item:last-child {
+    margin-bottom: 0;
+}
+
+.breakdown-item .label {
+    width: 45px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: #0f172a;
+}
+
+.bar-bg {
+    flex-grow: 1;
+    background: #f1f5f9;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-left: 10px;
+}
+
+.bar-fill {
+    background: #0f172a; /* Matching your navy vibe */
+    height: 100%;
+    transition: width 0.8s ease-out;
+}
+
+/* 1. THE CONTAINER */
+.stat-box.mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Groups items at the top */
+    
+    height: 110px;           
+    padding-top: 12px;       /* Distance from top border to number */
+    background: white;
+    border-radius: 8px;
+    border-top: 4px solid #0f172a;
+}
+
+.stat-box.mini span {
+    /* Manual Gap Control */
+    margin-bottom: 8px;      /* <--- Adjust this for the gap between circle and text */
+    
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a237e;
+    background: #f1f5f9;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;          /* Prevents the circle from squishing */
+}
+
+.stat-box.mini small {
+    /* THE ALIGNMENT FIX: Fixed height 'shelf' */
+    height: 35px;            
+    width: 100%;
+    display: flex;
+    align-items: flex-start; /* Aligns all text to the top of the 35px shelf */
+    justify-content: center;
+    
+    font-weight: 800;
+    color: #0f172a;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    line-height: 1.1;
+    text-align: center;
+    margin: 0;               /* Remove any default browser margins */
+}
+
+/* Styling for the table rows based on status */
+.selection-table tr.selected {
+    background-color: #f0fdf4; /* Light green background */
+}
+
+.selection-table tr.reserved {
+    background-color: #fffbeb; /* Light orange background */
+}
+
+.selection-table tr.selected td:first-child {
+    border-left: 5px solid #10b981; /* Dark green stripe */
+}
+
+.selection-table tr.reserved td:first-child {
+    border-left: 5px solid #f59e0b; /* Dark orange stripe */
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-delete:hover {
+    background: #fecaca;
+}
+
+.table-hint {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* Highlight row when checked */
+.player-row.row-checked {
+    background-color: #e2e8f0 !important;
+    border-left: 4px solid #0f172a;
+}
+
+/* Action Bar Buttons */
+.btn-cancel {
+    background: transparent;
+    border: 1px solid #94a3b8;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.delete-bar {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    background: #0f172a;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px; /* Square-ish modern look */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    z-index: 1000;
+    transition: bottom 0.3s ease;
+}
+
+.delete-bar.active { bottom: 20px; }

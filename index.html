@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Akademi Ragbi Melaka</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="main-banner">
+    <div class="banner-logo">🏉</div>
+    <h1>AKADEMI RAGBI MELAKA</h1>
+    <p>Player Selection Portal 2026</p>
+  </div>
+
+  <div class="sticky-controls">
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Search player..." class="search-input">
+      <button id="btnResetIndex" class="btn-reset-mini">↺ Reset</button>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">AGE CATEGORY</div>
+      <div id="ageChips" class="chip-container"></div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">UNIT / POSITION</div>
+      <div id="unitChips" class="chip-container"></div>
+    </div>
+  </div>
+
+  <div id="cardContainer" class="card-container"></div>
+
+  <div class="bottom-action-bar">
+    <div class="status-summary">
+      <div class="status-group">
+        <div class="status-circle available" id="countAvailable">0</div>
+        <span class="status-label">Avail</span>
+      </div>
+      <div class="status-group">
+        <div class="status-circle selected" id="countSelected">0</div>
+        <span class="status-label">Sel</span>
+      </div>
+      <div class="status-group">
+        <div class="status-circle reserved" id="countReserved">0</div>
+        <span class="status-label">Res</span>
+      </div>
+    </div>
+    <a href="summary.html" class="btn-summary">View Summary</a>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

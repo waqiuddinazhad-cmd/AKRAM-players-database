@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summary - Rugby Manager</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body style="padding-top:20px; background:#f8fafc;">
+  
+  <div style="max-width: 800px; margin: 0 auto; padding: 0 20px 100px 20px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+      <a href="index.html" style="text-decoration:none; color:#0f172a; font-weight:800; font-size:1.1rem;">&larr; Back to Selection</a>
+      <button id="resetBtn" class="btn-reset" style="color:red; border-color:red;">Reset All</button>
+    </div>
+
+    <div class="stat-box" style="text-align: left; margin-bottom: 30px; border-top: 4px solid #0f172a;">
+      <h4 style="margin: 0 0 15px 0; color: #64748b; font-size: 0.75rem;">GENERATE CONSENT FORMS</h4>
+      <input type="text" id="tName" placeholder="Tournament Name" class="search-input" style="margin-bottom:10px;">
+      <div class="stats-grid-2-col" style="margin-bottom:0">
+        <input type="text" id="tDate" placeholder="Date (e.g., 12 Sept)" class="search-input" style="margin-bottom:0">
+        <input type="text" id="tVenue" placeholder="Venue" class="search-input" style="margin-bottom:0">
+      </div>
+      <button id="generatePdfBtn" style="width:100%; margin-top:15px; padding:15px; background:#0f172a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:1rem;">
+        Download PDF Forms
+      </button>
+    </div>
+    <h2 class="section-title">Team Breakdown</h2>
+    <div id="statsContainer"></div>
+    <div id="ageBreakdownContainer" style="margin-bottom: 30px;"></div>
+
+
+    <div id="selectedList" style="margin-top:30px;"></div>
+    <div id="reservedList" style="margin-top:30px;"></div>
+    <h2 class="section-title">Final Selection List</h2>
+<div id="tableOutput"></div>
+
+  </div>
+
+  <script src="summary.js"></script>
+</body>
+</html>
