@@ -41,7 +41,10 @@ async function init() {
 function setupFilters() {
   // Age Filters
   const ageBox = document.getElementById('ageChips');
-  const ages = [...new Set(students.map(s => s.umur))].filter(a => a !== "0").sort((a,b)=>a-b);
+  const ages = [...new Set(students.map(s => s.umur))]
+    .filter(a => a !== "0")
+    .sort((a, b) => a - b);
+
   ageBox.innerHTML = '';
   ages.forEach(age => {
     const chip = document.createElement('div');
@@ -49,7 +52,9 @@ function setupFilters() {
     chip.textContent = age + 'Y';
     chip.onclick = () => {
       chip.classList.toggle('active');
-      activeAgeFilters.has(age) ? activeAgeFilters.delete(age) : activeAgeFilters.add(age);
+      activeAgeFilters.has(age)
+        ? activeAgeFilters.delete(age)
+        : activeAgeFilters.add(age);
       renderCards();
     };
     ageBox.appendChild(chip);
@@ -65,7 +70,9 @@ function setupFilters() {
     chip.textContent = label;
     chip.onclick = () => {
       chip.classList.toggle('active');
-      activeUnitFilters.has(key) ? activeUnitFilters.delete(key) : activeUnitFilters.add(key);
+      activeUnitFilters.has(key)
+        ? activeUnitFilters.delete(key)
+        : activeUnitFilters.add(key);
       renderCards();
     };
     unitBox.appendChild(chip);
@@ -78,59 +85,64 @@ function renderCards() {
   container.innerHTML = '';
 
   const filtered = students.filter(s => {
-    const matchesSearch = s.nama_murid.toLowerCase().includes(search) || (s.nama_samaran || "").toLowerCase().includes(search);
-    const matchesAge = activeAgeFilters.size === 0 || activeAgeFilters.has(s.umur);
-    
+    const matchesSearch =
+      s.nama_murid.toLowerCase().includes(search) ||
+      (s.nama_samaran || "").toLowerCase().includes(search);
+
+    const matchesAge =
+      activeAgeFilters.size === 0 || activeAgeFilters.has(s.umur);
+
     // Using cleanUnit to match the lowercase keys from TARGET_UNITS
-    const matchesUnit = activeUnitFilters.size === 0 || activeUnitFilters.has(s.cleanUnit);
-    
+    const matchesUnit =
+      activeUnitFilters.size === 0 || activeUnitFilters.has(s.cleanUnit);
+
     return matchesSearch && matchesAge && matchesUnit;
   });
 
   // Update the Bottom Bar with the count of players matching current filters
-  updateBottomBar(filtered.length); 
-  
+  updateBottomBar(filtered.length);
+
   filtered.forEach(s => {
     const card = document.createElement('div');
     const status = selectionState[s.nama_murid] || 'available';
     card.className = `student-card ${status}`;
-    
+
     // IMAGE PATH LOGIC
     let imgPath = s.image ? s.image.trim() : "";
     let finalSrc = `https://ui-avatars.com/api/?name=${s.nama_murid}&background=random`;
-    
+
     if (imgPath !== "") {
-        finalSrc = (imgPath.startsWith('http') || imgPath.startsWith('assets/')) ? imgPath : `assets/${imgPath}`;
+      finalSrc =
+        imgPath.startsWith('http') || imgPath.startsWith('assets/')
+          ? imgPath
+          : `assets/${imgPath}`;
     }
 
     card.innerHTML = `
-  <div class="sq-img-wrapper">
-    <img src="${finalSrc}" onerror="this.src='https://via.placeholder.com/80'">
-  </div>
-
-  <div class="nickname">
-    ${(s.nama_samaran || s.nama_murid.split(' ')[0]).toUpperCase()}
-  </div>
-
-  <div class="realname">
-    ${s.nama_murid.toUpperCase()}
-  </div>
-
-  <div class="class-unit">
-    ${s.displayUnit} • ${s.umur}YO
-  </div>
-`;
-
+      <img src="${finalSrc}" class="student-image" alt="player"
+           onerror="this.src='https://via.placeholder.com/150?text=No+Photo'">
+      <div class="card-info">
+        <div class="nickname">${(s.nama_samaran || s.nama_murid).toUpperCase()}</div>
+        <div class="realname">${s.nama_murid.toUpperCase()}</div>
+        <div class="class-unit">${s.displayUnit} • ${s.umur}YO</div>
+      </div>
+    `;
 
     card.onclick = () => {
-      if(status === 'available') selectionState[s.nama_murid.toUpperCase()] = 'selected';
-      else if(status === 'selected') selectionState[s.nama_murid.toUpperCase()] = 'reserved';
-      else delete selectionState[s.nama_murid.toUpperCase()
-      ];
-      
-      localStorage.setItem('studentApp_selections', JSON.stringify(selectionState));
+      if (status === 'available')
+        selectionState[s.nama_murid.toUpperCase()] = 'selected';
+      else if (status === 'selected')
+        selectionState[s.nama_murid.toUpperCase()] = 'reserved';
+      else
+        delete selectionState[s.nama_murid.toUpperCase()];
+
+      localStorage.setItem(
+        'studentApp_selections',
+        JSON.stringify(selectionState)
+      );
       renderCards(); // Re-render to update counts and colors
     };
+
     container.appendChild(card);
   });
 }
@@ -139,23 +151,24 @@ function updateBottomBar(filteredCount) {
   const vals = Object.values(selectionState);
   const sel = vals.filter(v => v === 'selected').length;
   const res = vals.filter(v => v === 'reserved').length;
-  
+
   document.getElementById('countSelected').textContent = sel;
   document.getElementById('countReserved').textContent = res;
-  
+
   // Available calculation is now relative to the filtered view
-  const totalInView = (filteredCount !== undefined) ? filteredCount : students.length;
-  document.getElementById('countAvailable').textContent = totalInView - (sel + res);
+  const totalInView =
+    filteredCount !== undefined ? filteredCount : students.length;
+  document.getElementById('countAvailable').textContent =
+    totalInView - (sel + res);
 }
 
 document.getElementById('searchInput').oninput = renderCards;
 
 document.getElementById('btnResetIndex').onclick = () => {
-  if(confirm("Reset all selections?")) {
+  if (confirm("Reset all selections?")) {
     localStorage.removeItem('studentApp_selections');
     location.reload();
   }
 };
-
 
 init();
