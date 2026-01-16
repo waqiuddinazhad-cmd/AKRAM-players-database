@@ -104,13 +104,23 @@ function renderCards() {
     }
 
     card.innerHTML = `
-      <img src="${finalSrc}" class="student-image" alt="player" onerror="this.src='https://via.placeholder.com/150?text=No+Photo'">
-      <div class="card-info">
-        <div class="nickname">${(s.nama_samaran || s.nama_murid).toUpperCase()}</div>
-        <div class="realname">${s.nama_murid.toUpperCase()}</div>
-        <div class="class-unit">${s.displayUnit} • ${s.umur}YO</div>
-      </div>
-    `;
+  <div class="sq-img-wrapper">
+    <img src="${finalSrc}" onerror="this.src='https://via.placeholder.com/80'">
+  </div>
+
+  <div class="nickname">
+    ${(s.nama_samaran || s.nama_murid.split(' ')[0]).toUpperCase()}
+  </div>
+
+  <div class="realname">
+    ${s.nama_murid.toUpperCase()}
+  </div>
+
+  <div class="class-unit">
+    ${s.displayUnit} • ${s.umur}YO
+  </div>
+`;
+
 
     card.onclick = () => {
       if(status === 'available') selectionState[s.nama_murid.toUpperCase()] = 'selected';
@@ -146,5 +156,6 @@ document.getElementById('btnResetIndex').onclick = () => {
     location.reload();
   }
 };
+
 
 init();
