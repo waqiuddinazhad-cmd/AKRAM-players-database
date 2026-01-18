@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Akademi Ragbi Melaka</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </head>
 <body>
 
@@ -14,22 +16,25 @@
     <p>Player Selection Portal 2026</p>
   </div>
 
-  <div class="sticky-controls">
-    <div class="search-row">
-      <input type="text" id="searchInput" placeholder="Search player..." class="search-input">
-      <button id="btnResetIndex" class="btn-reset-mini">↺ Reset</button>
-    </div>
+  <div class="sticky-header-container">
+    <div class="sticky-controls">
+        <div class="search-row">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search name or nickname...">
+            <button id="btnResetIndex" class="btn-reset-mini" title="Reset Filters">↻</button>
+        </div>
 
-    <div class="filter-section">
-      <div class="filter-label">AGE CATEGORY</div>
-      <div id="ageChips" class="chip-container"></div>
+        <div class="filter-section">
+            <div class="filter-label">Age Group</div>
+            <div id="ageChips" class="chip-container"></div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-label">Unit</div>
+            <div id="unitChips" class="chip-container"></div>
+        </div>
     </div>
-
-    <div class="filter-section">
-      <div class="filter-label">UNIT / POSITION</div>
-      <div id="unitChips" class="chip-container"></div>
-    </div>
-  </div>
+</div>
+  
 
   <div id="cardContainer" class="card-container"></div>
 
@@ -49,6 +54,16 @@
       </div>
     </div>
     <a href="summary.html" class="btn-summary">View Summary</a>
+  </div>
+
+  <div id="profileModal" class="modal-overlay" onclick="closeProfileOnBackground(event)">
+    <div class="close-modal" onclick="closeProfile()">×</div>
+    
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper" id="carouselWrapper">
+            </div>
+        <div class="swiper-pagination"></div>
+    </div>
   </div>
 
   <script src="app.js"></script>
