@@ -1,96 +1,416 @@
-/* ===== GLOBAL SETTINGS ===== */
-body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; padding-bottom: 100px; }
+/* =========================================
+   1. GLOBAL SETTINGS & TYPOGRAPHY
+   ========================================= */
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    background: #f1f5f9; 
+    margin: 0; 
+    padding-bottom: 100px; /* Space for bottom fixed bars */
+}
+
 * { box-sizing: border-box; }
 
-/* ===== BANNER ===== */
-.main-banner { background: #0f172a; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #f59e0b; }
+/* Main Banner (Top Black Bar) */
+.main-banner { 
+    background: #0f172a; 
+    color: white; 
+    padding: 20px; 
+    text-align: center; 
+    border-bottom: 4px solid #f59e0b; 
+}
 .main-banner h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
 .main-banner p { margin: 5px 0 0; color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; }
 
-/* ===== STICKY HEADER ===== */
-.sticky-controls {
+/* =========================================
+   2. STICKY HEADER & SEARCH CONTROLS
+   ========================================= */
+/* The Wrapper: Stretches across the whole screen */
+.sticky-header-container {
     position: sticky;
     top: 0;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(5px);
-    padding: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    left: 0;
+    width: 100%;
+    background: #ffffff;
     z-index: 100;
-    
-    /* ADD THESE TWO LINES */
-    max-width: 600px;  /* Matches your .card-container */
-    margin: 0 auto;    /* Centers the bar on the screen */
-    width: 100%;       /* Ensures it takes full width on small phones */
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* The Inner Box: Centers content */
+.sticky-controls {
+    max-width: 1000px; /* Matches max-width of card grid */
+    margin: 0 auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Container for Search Input + Reset Button */
+.search-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
 }
 
 .search-input {
-    flex: 1;
-    padding: 10px;
+    flex: 1; /* Grows to fill space */
+    padding: 12px 15px;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
+    border-radius: 10px;
+    font-size: 0.9rem;
     outline: none;
-    /* ADD THIS LINE */
-    min-width: 0;      /* Prevents the input from pushing past the box in Flexbox */
+    background: #f8fafc;
+    min-width: 0;
 }
-.btn-reset-mini { padding: 0 15px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; cursor: pointer; color: #64748b; font-size: 0.8rem; }
 
-/* ===== FILTERS (CHIPS) ===== */
-.filter-section { margin-bottom: 10px; }
-.filter-label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; margin-bottom: 5px; letter-spacing: 0.5px; }
-.chip-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.search-input:focus {
+    border-color: #0f172a;
+    background: white;
+}
+
+/* Compact Reset Icon Button */
+.btn-reset-mini {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-reset-mini:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.btn-reset-mini:active {
+    transform: scale(0.9);
+}
+
+/* =========================================
+   3. FILTERS (CHIPS)
+   ========================================= */
+.filter-section { margin-bottom: 0; } /* Spacing handled by sticky-controls gap */
+.filter-label { 
+    font-size: 0.65rem; 
+    font-weight: 800; 
+    color: #94a3b8; 
+    margin-bottom: 5px; 
+    letter-spacing: 0.5px; 
+}
+
+.chip-container { 
+    display: flex; 
+    gap: 8px; 
+    overflow-x: auto; 
+    padding-bottom: 2px; 
+    scrollbar-width: none; 
+    -webkit-overflow-scrolling: touch;
+}
 .chip-container::-webkit-scrollbar { display: none; }
 
-.chip { background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; white-space: nowrap; cursor: pointer; border: 1px solid transparent; font-weight: 600; color: #475569; }
-.chip.active { background: #0f172a; color: white; border-color: #0f172a; }
+.chip { 
+    background: #f1f5f9; 
+    padding: 6px 14px; 
+    border-radius: 20px; 
+    font-size: 0.8rem; 
+    white-space: nowrap; 
+    cursor: pointer; 
+    border: 1px solid transparent; 
+    font-weight: 600; 
+    color: #475569; 
+}
 
-/* ===== CARD CONTAINER ===== */
-.card-container { padding: 15px; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.chip.active { 
+    background: #0f172a !important; 
+    color: #ffffff !important; 
+    border-color: #0f172a !important;
+}
 
-/* ===== STUDENT CARD (LAYOUT RESTORED) ===== */
+/* =========================================
+   4. CARD GRID LAYOUT
+   ========================================= */
+.card-container {
+    padding: 15px;
+    margin: 0 auto;
+    max-width: 1200px;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* Default: 2 cols (Phone) */
+}
+
+/* =========================================
+   5. STUDENT CARD DESIGN
+   ========================================= */
 .student-card {
-  display: flex;           /* Horizontal Layout */
-  align-items: center;     /* Vertically Center */
-  background: white;
-  padding: 10px;
-  border-radius: 12px;     /* Rounded Card */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.1s ease;
-  gap: 12px;               /* Space between image and text */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: white;
+    padding: 15px 10px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s ease;
+    gap: 10px;
+    overflow: hidden;
 }
 
 .student-card:active { transform: scale(0.98); }
 
-/* STATUS COLORS */
+/* Status Colors (Card Border & Bg) */
 .student-card.selected { border-color: #10b981; background: #ecfdf5; }
 .student-card.reserved { border-color: #f59e0b; background: #fffbeb; }
 
-/* IMAGE (ROUNDED SQUARE) */
+/* Status Colors (Image Shadow) */
+.student-card.selected .student-image { box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+.student-card.reserved .student-image { box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); }
+
+/* Image Styling */
 .student-image {
-  width: 65px;
-  height: 65px;
-  border-radius: 10px;     /* Rounded Square */
-  object-fit: cover;
-  background: #e2e8f0;
-  flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #e2e8f0;
+    flex-shrink: 0;
+    margin: 0 auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border: 2px solid #ffffff;
 }
 
-/* TEXT DETAILS (ON RIGHT) */
-.card-info { flex: 1; overflow: hidden; }
+/* Card Text Info */
+.card-info { 
+    width: 100%; 
+    overflow: hidden; 
+}
 .nickname { font-weight: 800; font-size: 1rem; color: #0f172a; line-height: 1.1; }
 .realname { font-size: 0.75rem; color: #64748b; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .class-unit { font-size: 0.7rem; color: #94a3b8; font-weight: 700; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* ===== BOTTOM BAR ===== */
-.bottom-action-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: white; padding: 12px 20px;
-  display: flex; justify-content: space-between; align-items: center;
-  border-top: 1px solid #e2e8f0; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
-  z-index: 200;
+.class-rhs {
+    margin-left: auto;
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    display: inline-block;
+    padding-left: 10px;
 }
 
+/* Expand Icon on Card */
+.expand-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(15, 23, 42, 0.01) !important;
+    color: #64748b !important;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+.expand-btn:active {
+    transform: scale(0.9);
+    background: #f59e0b !important;
+    color: #0f172a !important;
+}
+
+/* =========================================
+   6. MODAL & PROFILE CARD (THE SCOUT CARD)
+   ========================================= */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
+    z-index: 2000; display: none; align-items: center; justify-content: center;
+}
+
+#profileModal { padding: 20px; }
+
+/* The Base Card */
+.profile-card {
+    background: white; 
+    width: 100%; 
+    max-width: 500px; /* Default Phone Width */
+    margin: auto; 
+    border-radius: 24px; 
+    padding: 25px;
+    max-height: 90vh; 
+    overflow-y: auto; 
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px;
+    transition: max-width 0.3s ease;
+}
+
+/* Profile Header (Image + Name) */
+.profile-header-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+}
+.profile-header-main img {
+    width: 140px; height: 140px;
+    border-radius: 20px; object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Profile Content Utils */
+.profile-section { margin-bottom: 25px; }
+.section-label { 
+    font-size: 0.65rem; font-weight: 800; color: #94a3b8; 
+    text-transform: uppercase; letter-spacing: 1px;
+    border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 12px;
+}
+.data-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; }
+.data-item { display: flex; flex-direction: column; }
+.data-val { font-weight: 800; color: #0f172a; font-size: 1.1rem; }
+.data-lbl { font-size: 0.6rem; color: #64748b; text-transform: uppercase; }
+
+/* Swiper */
+.mySwiper { width: 100%; height: 100%; }
+
+/* Close Modal Button */
+.close-modal {
+    position: absolute; top: 4px; right: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white; font-size: 32px; font-weight: 300; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 9999 !important;
+    pointer-events: auto;
+}
+.close-modal:active { background: rgba(255, 255, 255, 0.4); }
+
+/* Copy Badges & Address */
+.copy-badge {
+    display: inline-block; background: #f1f5f9; padding: 6px 15px;
+    border-radius: 20px; font-family: 'Courier New', monospace;
+    font-size: 0.9rem; font-weight: bold; color: #0f172a;
+    cursor: pointer; border: 1px solid #cbd5e1; margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+.address-text {
+    font-size: 0.65rem; color: #64748b; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px; word-break: break-word; line-height: 1.4;
+    font-weight: 600; background: #f1f5f9; border-radius: 8px;
+    min-height: 45px; margin-top: 8px; border: 1px dashed #cbd5e1;
+    transition: all 0.2s ease;
+}
+.copy-badge:hover, .address-text:hover { background: #e2e8f0; }
+.copy-badge:active, .address-text:active { transform: scale(0.95); }
+.medical-box { background: #fffbeb; border: 1px solid #fef3c7; padding: 12px; border-radius: 12px; color: #92400e; font-size: 0.8rem; }
+
+/* =========================================
+   7. SUMMARY PAGE UTILITIES
+   ========================================= */
+/* Stat Boxes */
+.stats-grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+.stats-grid-4-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+
+.stat-box { background: white; padding: 15px; border-radius: 8px; border-top: 4px solid #094692; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+.stat-number { display: block; font-size: 1.4rem; font-weight: 800; }
+.stat-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: bold; }
+
+/* Optimized Mini Stat Box */
+.stat-box.mini {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    height: 95px; padding-top: 10px;
+    background: white; border-radius: 8px; border-top: 4px solid #0f172a;
+}
+.stat-box.mini span {
+    margin-bottom: 8px; /* Adjusted gap */
+    font-size: 1.6rem; font-weight: 700; color: #1a237e;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; flex-shrink: 0;
+}
+.stat-box.mini small {
+    width: 100%; display: block;
+    font-weight: 800; color: #0f172a; text-transform: uppercase;
+    font-size: 0.65rem; line-height: 1; text-align: center; margin: 0;
+}
+
+/* Titles */
+.section-title {
+    font-size: 1.25rem; font-weight: 800; color: #64748b;
+    text-transform: uppercase; letter-spacing: 2px;
+    margin: 40px auto 25px auto; text-align: center;
+    display: flex; flex-direction: column; align-items: center;
+}
+.section-title::after {
+    content: ""; width: 220px; height: 3px; background: #0f172a;
+    margin-top: 10px; border-radius: 2px;
+}
+
+/* Age Breakdown Bars */
+#ageBreakdownContainer {
+    background: white; padding: 20px; border-radius: 8px;
+    border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.breakdown-item { display: flex; align-items: center; margin-bottom: 12px; }
+.breakdown-item:last-child { margin-bottom: 0; }
+.breakdown-item .label { width: 45px; font-weight: 800; font-size: 0.8rem; color: #0f172a; }
+.bar-bg { flex-grow: 1; background: #f1f5f9; height: 12px; border-radius: 6px; overflow: hidden; margin-left: 10px; }
+.bar-fill { background: #0f172a; height: 100%; transition: width 0.8s ease-out; }
+
+/* Selection Table */
+.selection-table {
+    width: 100%; border-collapse: collapse; background: white;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+.selection-table th { background: #0f172a; color: white; text-align: left; padding: 12px 15px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+.selection-table td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; color: #1e293b; }
+.selection-table tr:nth-child(even) { background-color: #f8fafc; }
+.unit-tag { font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #e2e8f0; color: #475569; text-transform: uppercase; }
+
+/* Table Status Highlights */
+.selection-table tr.selected { background-color: #f0fdf4; }
+.selection-table tr.reserved { background-color: #fffbeb; }
+.selection-table tr.selected td:first-child { border-left: 5px solid #10b981; }
+.selection-table tr.reserved td:first-child { border-left: 5px solid #f59e0b; }
+.player-row.row-checked { background-color: #e2e8f0 !important; border-left: 4px solid #0f172a; }
+
+.table-hint { font-size: 0.7rem; color: #94a3b8; text-align: center; margin-bottom: 10px; text-transform: uppercase; }
+
+/* =========================================
+   8. ACTION BARS (Bottom Fixed)
+   ========================================= */
+/* Main Summary Bar */
+.bottom-action-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white; padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #e2e8f0; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    z-index: 200;
+}
 .status-summary { display: flex; gap: 15px; }
 .status-group { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .status-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
@@ -98,206 +418,81 @@ body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; padd
 .status-circle.selected { background: #10b981; color: white; }
 .status-circle.reserved { background: #f59e0b; color: white; }
 .status-label { font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+.btn-summary { background: #0f172a; color: white; text-decoration: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; align-content: center; }
 
-.btn-summary { background: #0f172a; color: white; text-decoration: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; }
-
-/* ===== SUMMARY PAGE UTILS ===== */
-.stat-box { background: white; padding: 15px; border-radius: 8px; border-top: 4px solid #094692; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-.stat-box.mini { padding: 8px; font-size: 1rem; }
-.stat-number { display: block; font-size: 1.4rem; font-weight: 800; }
-.stat-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: bold; }
-.stats-grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-.stats-grid-4-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-
-.section-title {
-    font-size: 1.25rem;           /* Slightly larger for center visibility */
-    font-weight: 800;
-    color: #64748b;              /* Slate-grey vibes */
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 40px auto 25px auto; /* 'auto' left/right centers the block */
-    text-align: center;          /* Centers the actual text */
-    display: flex;
-    flex-direction: column;      /* Puts the line underneath */
-    align-items: center;         /* Centers the line relative to text */
-}
-
-/* The Custom Underline */
-.section-title::after {
-    content: "";
-    width: 220px;                 /* Length of the underline */
-    height: 3px;                 /* Thickness of the underline */
-    background: #0f172a;         /* Matches your dark navy header/buttons */
-    margin-top: 10px;            /* Space between text and line */
-    border-radius: 2px;          /* Smooth edges */
-}
-
-/* Container for the bars */
-#ageBreakdownContainer {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.breakdown-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.breakdown-item:last-child {
-    margin-bottom: 0;
-}
-
-.breakdown-item .label {
-    width: 45px;
-    font-weight: 800;
-    font-size: 0.8rem;
-    color: #0f172a;
-}
-
-.bar-bg {
-    flex-grow: 1;
-    background: #f1f5f9;
-    height: 12px;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-left: 10px;
-}
-
-.bar-fill {
-    background: #0f172a; /* Matching your navy vibe */
-    height: 100%;
-    transition: width 0.8s ease-out;
-}
-
-/* 1. THE CONTAINER */
-.stat-box.mini {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Groups items at the top */
-    
-    height: 110px;           
-    padding-top: 12px;       /* Distance from top border to number */
-    background: white;
-    border-radius: 8px;
-    border-top: 4px solid #0f172a;
-}
-
-.stat-box.mini span {
-    /* Manual Gap Control */
-    margin-bottom: 8px;      /* <--- Adjust this for the gap between circle and text */
-    
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #1a237e;
-    background: #f1f5f9;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    flex-shrink: 0;          /* Prevents the circle from squishing */
-}
-
-.stat-box.mini small {
-    /* THE ALIGNMENT FIX: Fixed height 'shelf' */
-    height: 35px;            
-    width: 100%;
-    display: flex;
-    align-items: flex-start; /* Aligns all text to the top of the 35px shelf */
-    justify-content: center;
-    
-    font-weight: 800;
-    color: #0f172a;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    line-height: 1.1;
-    text-align: center;
-    margin: 0;               /* Remove any default browser margins */
-}
-
-/* Styling for the table rows based on status */
-.selection-table tr.selected {
-    background-color: #f0fdf4; /* Light green background */
-}
-
-.selection-table tr.reserved {
-    background-color: #fffbeb; /* Light orange background */
-}
-
-.selection-table tr.selected td:first-child {
-    border-left: 5px solid #10b981; /* Dark green stripe */
-}
-
-.selection-table tr.reserved td:first-child {
-    border-left: 5px solid #f59e0b; /* Dark orange stripe */
-}
-
-.btn-delete {
-    background: #fee2e2;
-    color: #dc2626;
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.btn-delete:hover {
-    background: #fecaca;
-}
-
-.table-hint {
-    font-size: 0.7rem;
-    color: #94a3b8;
-    text-align: center;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-/* Highlight row when checked */
-.player-row.row-checked {
-    background-color: #e2e8f0 !important;
-    border-left: 4px solid #0f172a;
-}
-
-/* Action Bar Buttons */
-.btn-cancel {
-    background: transparent;
-    border: 1px solid #94a3b8;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    cursor: pointer;
-}
-
+/* Delete Actions Bar */
 .delete-bar {
-    position: fixed;
-    bottom: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 500px;
-    background: #0f172a;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 12px; /* Square-ish modern look */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 500px;
+    background: #0f172a; color: white;
+    padding: 12px 20px; border-radius: 12px;
+    display: flex; justify-content: space-between; align-items: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    z-index: 1000;
-    transition: bottom 0.3s ease;
+    z-index: 1000; transition: bottom 0.3s ease;
+}
+.delete-bar.active { bottom: 20px; }
+.btn-delete {
+    background: #fee2e2; color: #dc2626; border: none;
+    width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+    font-weight: bold; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+}
+.btn-delete:hover { background: #fecaca; }
+.btn-cancel {
+    background: transparent; border: 1px solid #94a3b8; color: white;
+    padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;
 }
 
-.delete-bar.active { bottom: 20px; }
+/* =========================================
+   9. MEDIA QUERIES (RESPONSIVENESS)
+   ========================================= */
+
+/* --- TABLETS (min-width: 768px) --- */
+@media (min-width: 768px) {
+    /* 1. Header & Controls */
+    .sticky-controls { padding: 20px 24px; gap: 20px; }
+    .filter-label { font-size: 0.9rem; letter-spacing: 1px; }
+    .chip { padding: 8px 16px; font-size: 0.85rem; flex: 0 0 auto; }
+    .chip-container { gap: 12px; }
+
+    /* 2. Grid Columns */
+    .card-container { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    /* 3. Expanded Profile Card (Split View) */
+    .profile-card {
+        max-width: 850px;
+        display: grid;
+        grid-template-columns: 300px 1fr; /* Image/Guardian on left, Stats on right */
+        grid-template-rows: auto auto;
+        column-gap: 40px;
+        padding: 40px;
+    }
+    .profile-header-main {
+        grid-row: 1 / 2;
+        align-items: flex-start;
+        text-align: left;
+    }
+    .profile-header-main img { width: 100%; height: 300px; }
+    .stats-container {
+        grid-column: 2 / 3;
+        grid-row: 1 / 3; /* Stats stretch down the right side */
+    }
+    .guardian-info-section {
+        grid-column: 1 / 2;
+        grid-row: 2 / 3;
+        align-self: end;
+    }
+}
+
+/* --- DESKTOPS (min-width: 1024px) --- */
+@media (min-width: 1024px) {
+    .sticky-controls { padding: 25px 0; }
+    .card-container { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    
+    /* Hover effects for mouse users */
+    .chip:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        transform: translateY(-2px);
+    }
+}
