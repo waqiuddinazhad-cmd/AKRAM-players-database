@@ -85,26 +85,32 @@ function renderPlayerTable(allStudents, selectionState) {
     `;
 
     list.forEach((s, index) => {
-        const displayClass = `${(s.tingkatan || "").replace('FORM ', '')} ${s.kelas || ""}`;
-        const isChecked = selectedForDeletion.has(s.nama_murid.toUpperCase());
-        const status = selectionState[s.nama_murid.toUpperCase()];
+    // We keep the formatting, but we wrap it in the new class-rhs div
+    const displayClass = `${(s.tingkatan || "").replace('FORM ', '')} ${s.kelas || ""}`;
+    const isChecked = selectedForDeletion.has(s.nama_murid.toUpperCase());
+    const status = selectionState[s.nama_murid.toUpperCase()];
 
-        tableHTML += `
-            <tr class="${status} ${isChecked ? 'row-checked' : ''}" 
-                onmousedown="startPress('${s.nama_murid.toUpperCase()}')" onmouseup="endPress()" 
-                ontouchstart="startPress('${s.nama_murid.toUpperCase()}')" ontouchend="endPress()"
-                onclick="handleRowClick('${s.nama_murid.toUpperCase()}')">
-                
-                ${selectionMode ? `<td><input type="checkbox" ${isChecked ? 'checked' : ''} readonly></td>` : ''}
-                <td>${index + 1}</td>
-                <td>
-                    <strong>${s.nama_murid.toUpperCase()}</strong><br>
-                    <small style="color:#64748b">${s.no_kad_pengenalan_murid || "-"}</small>
-                </td>
-                <td>${displayClass}</td>
-            </tr>
-        `;
-    });
+    tableHTML += `
+        <tr class="${status} ${isChecked ? 'row-checked' : ''}" 
+            onmousedown="startPress('${s.nama_murid.toUpperCase()}')" onmouseup="endPress()" 
+            ontouchstart="startPress('${s.nama_murid.toUpperCase()}')" ontouchend="endPress()"
+            onclick="handleRowClick('${s.nama_murid.toUpperCase()}')">
+            
+            ${selectionMode ? `<td><input type="checkbox" ${isChecked ? 'checked' : ''} readonly></td>` : ''}
+            <td>${index + 1}</td>
+            <td class="copyable-cell">
+    <strong class="copy-text" onclick="copyToClipboard('${s.nama_murid.toUpperCase()}', this)">
+        ${s.nama_murid.toUpperCase()}
+    </strong><br>
+    <small class="copy-text" style="color:#64748b" onclick="copyToClipboard('${s.no_kad_pengenalan_murid || ""}', this)">
+        ${s.no_kad_pengenalan_murid || "-"}
+    </small>
+</td>
+            <td>
+                <div class="class-rhs">${displayClass}</div> </td>
+        </tr>
+    `;
+});
 
     tableHTML += `</tbody></table></div>
     <div id="deleteActionBar" class="delete-bar ${selectionMode ? 'active' : ''}">
@@ -216,8 +222,7 @@ async function generatePDF(players) {
             <td style="text-align:center">${i + 1}</td>
             <td>${p.nama_murid.toUpperCase()}</td>
             <td>${p.no_kad_pengenalan_murid || '-'}</td>
-            <td style="text-align:center">${p.tingkatan || ''} ${p.kelas || ''}</td>
-        </tr>
+<td style="text-align:center; white-space: nowrap;">${(p.tingkatan || "").replace('FORM ', '')} ${p.kelas || ''}</td>        </tr>
     `).join('');
 
     const playerTableHtml = `
@@ -297,4 +302,30 @@ document.getElementById('resetBtn').onclick = function() {
         
         alert("Semua data telah dikosongkan.");
     }
+};
+
+window.copyToClipboard = function(text, element) {
+    if (!text || text === "-") return;
+
+    // Use the modern Clipboard API
+    navigator.clipboard.writeText(text).then(() => {
+        // Visual feedback
+        const originalColor = element.style.color;
+        const originalText = element.innerText;
+        
+        element.style.color = "#10b981"; // Turn green
+        
+        // Show a temporary tooltip or change text
+        const feedback = document.createElement('span');
+        feedback.innerText = " ✓";
+        feedback.style.fontSize = "10px";
+        element.appendChild(feedback);
+
+        setTimeout(() => {
+            element.style.color = originalColor;
+            feedback.remove();
+        }, 1000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
 };
