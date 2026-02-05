@@ -398,9 +398,9 @@ const docDefinition = {
             const displayClass = `${(p.tingkatan || "").replace('FORM ', '')} ${p.kelas || ""}`;
             
             // SMART MAPPING: Handles 'alamat', 'Alamat', or 'alamat_rumah'
-            const parentName = p.nama_penjaga || p.Nama_Penjaga || '...........................................';
-            const parentAddress = p.alamat_rumah || p.alamat || p.Alamat || '...........................................';
-            const parentPhone = p.no_telefon_penjaga || p.no_tel || p.no_tel_penjaga || '...........................................';
+            const parentName = p.nama_penjaga || p.Nama_Penjaga || '...........................................'.toUpperCase();
+            const parentAddress = p.alamat_rumah || p.alamat || p.Alamat || '...........................................'.toUpperCase();
+            const parentPhone = p.no_telefon_penjaga || p.no_tel || p.no_tel_penjaga || '...........................................'.toUpperCase();
 
             const page = [
                 // 1. HEADER (Corrected Centering & Alignment)
@@ -570,3 +570,4 @@ if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
 }
 // Start the app
 init();
+
