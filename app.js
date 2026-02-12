@@ -1,15 +1,16 @@
 const SHEET_URL = "https://raw.githubusercontent.com/waqiuddinazhad-cmd/AKRAM-players-database/refs/heads/main/data.json";
+
 let students = [];
 let activeAgeFilters = new Set();
 let activeUnitFilters = new Set();
 let selectionState = JSON.parse(localStorage.getItem('studentApp_selections')) || {};
 let swiperInstance = null;
+const TARGET_UNITS = ["Forwards", "Backlines", "Scrum-half", "Multi-role"];
 
-// --- INITIALIZATION ---
 // --- INITIALIZATION ---
 async function init() {
     try {
-        console.log("Attempting to fetch from:", SHEET_URL);
+        console.log("Attempting to fetch from GitHub:", SHEET_URL);
         const res = await fetch(SHEET_URL);
         
         if (!res.ok) {
@@ -17,11 +18,11 @@ async function init() {
         }
 
         const data = await res.json();
-        console.log("Data successfully received:", data); // Check your console for this!
+        console.log("Data successfully received:", data);
 
-        // MAPPING: We must ensure GitHub keys match your App's logic
+        // MAPPING: Translating GitHub keys to App keys
         students = data.map((s, index) => {
-            // Check for both lowercase and uppercase keys
+            // Mapping English keys from JSON to Malay keys used in your UI
             const name = s.name || s.Name || "Unknown";
             const age = s.age || s.Age || "0";
             const unit = s.unit || s.Unit || "No Unit";
@@ -34,16 +35,24 @@ async function init() {
             else if (raw.includes("multi")) clean = "multi-role";
             
             return {
-                ...s,
+                ...s, // Keep all original data
                 nama_murid: name,
                 nama_samaran: s.nickname || s.Nickname || name,
                 cleanUnit: clean,
                 displayUnit: unit,
-                umur: String(age).trim()
+                umur: String(age).trim(),
+                // Ensuring physical stats match the Profile Modal expectations
+                Weight: s.weight || s.Weight || "-",
+                Height: s.height || s.Height || "-",
+                '40m_sprint': s['40m_sprint'] || s.sprint_40m || "-",
+                'T-test': s['T-test'] || s.t_test || "-",
+                bodyweight_deadlift: s.bodyweight_deadlift || s.deadlift || "-",
+                nama_penjaga: s.nama_penjaga || s.guardian || "N/A",
+                no_telefon_penjaga: s.no_telefon_penjaga || s.guardian_phone || "",
+                alamat_rumah: s.alamat_rumah || s.address || ""
             };
         });
 
-        console.log("Mapped Students:", students);
         setupFilters();
         renderCards();
 
@@ -51,37 +60,33 @@ async function init() {
         console.error("DETAILED ERROR:", err);
         document.getElementById('cardContainer').innerHTML = `
             <div style="text-align:center; padding:20px; color:red;">
-                <p>⚠️ Failed to load data.</p>
+                <p>⚠️ Failed to load data from GitHub.</p>
                 <small>${err.message}</small>
+                <p style="font-size: 0.7rem; color: #666; margin-top:10px;">Check if your Repo is PUBLIC.</p>
             </div>`;
     }
-}// --- FILTER SETUP ---
-// --- UPDATED FILTER SETUP ---
+}
+
+// --- FILTER SETUP ---
 function setupFilters() {
-    // 1. Handle Age Chips
     const ageBox = document.getElementById('ageChips');
     const ages = [...new Set(students.map(s => s.umur))].filter(a => a !== "0").sort((a, b) => a - b);
     
     ageBox.innerHTML = '';
     ages.forEach(age => {
         const chip = document.createElement('div');
-        // If this age is in our active set, give it the 'active' class immediately
         chip.className = `chip ${activeAgeFilters.has(age) ? 'active' : ''}`;
         chip.textContent = age + 'Y';
         
         chip.onclick = () => {
-            // Update the Data
             if (activeAgeFilters.has(age)) activeAgeFilters.delete(age);
             else activeAgeFilters.add(age);
-            
-            // Re-draw EVERYTHING to ensure colors update
             setupFilters(); 
             renderCards();
         };
         ageBox.appendChild(chip);
     });
 
-    // 2. Handle Unit Chips
     const unitBox = document.getElementById('unitChips');
     unitBox.innerHTML = '';
     TARGET_UNITS.forEach(label => {
@@ -93,13 +98,13 @@ function setupFilters() {
         chip.onclick = () => {
             if (activeUnitFilters.has(key)) activeUnitFilters.delete(key);
             else activeUnitFilters.add(key);
-            
             setupFilters(); 
             renderCards();
         };
         unitBox.appendChild(chip);
     });
 }
+
 // --- RENDER MAIN CARDS ---
 function renderCards() {
     const container = document.getElementById('cardContainer');
@@ -119,8 +124,9 @@ function renderCards() {
         const card = document.createElement('div');
         const status = selectionState[s.nama_murid.toUpperCase()] || 'available';
         card.className = `student-card ${status}`;
+        
         let imgPath = s.image ? s.image.trim() : "";
-        let finalSrc = imgPath !== "" ? (imgPath.startsWith('http') || imgPath.startsWith('assets/') ? imgPath : `assets/${imgPath}`) : `https://ui-avatars.com/api/?name=${s.nama_murid}&background=random`;
+        let finalSrc = imgPath !== "" ? (imgPath.startsWith('http') || imgPath.startsWith('assets/') ? imgPath : `assets/${imgPath}`) : `https://ui-avatars.com/api/?name=${encodeURIComponent(s.nama_murid)}&background=random`;
 
         card.innerHTML = `
             <div class="expand-btn" onclick="event.stopPropagation(); openProfile('${s.nama_murid}')">+</div>
@@ -137,6 +143,7 @@ function renderCards() {
             if (currentStatus === 'available') selectionState[s.nama_murid.toUpperCase()] = 'selected';
             else if (currentStatus === 'selected') selectionState[s.nama_murid.toUpperCase()] = 'reserved';
             else delete selectionState[s.nama_murid.toUpperCase()];
+            
             localStorage.setItem('studentApp_selections', JSON.stringify(selectionState));
             renderCards();
         };
@@ -144,10 +151,11 @@ function renderCards() {
     });
 }
 
-// --- PROFILE EXPANSION (The Flexible Card) ---
+// --- PROFILE EXPANSION ---
 window.openProfile = function(playerName) {
     const wrapper = document.getElementById('carouselWrapper');
     wrapper.innerHTML = ''; 
+    
     const currentViewList = students.filter(s => {
         const search = document.getElementById('searchInput').value.toLowerCase();
         const matchesSearch = s.nama_murid.toLowerCase().includes(search) || (s.nama_samaran || "").toLowerCase().includes(search);
@@ -160,11 +168,13 @@ window.openProfile = function(playerName) {
         const w = parseFloat(s.Weight) || 0;
         const h = parseFloat(s.Height) / 100 || 0;
         const bmi = (w > 0 && h > 0) ? (w / (h * h)).toFixed(1) : "-";
+        
         let rawPhone = String(s.no_telefon_penjaga || "").replace(/\D/g,'');
         if (rawPhone.startsWith('0')) rawPhone = '6' + rawPhone;
         const waLink = `https://wa.me/${rawPhone}?text=Salam,%20saya%20jurulatih%20ragbi%20${s.nama_murid}`;
+        
         let imgPath = s.image ? s.image.trim() : "";
-        let finalSrc = imgPath !== "" ? (imgPath.startsWith('http') || imgPath.startsWith('assets/') ? imgPath : `assets/${imgPath}`) : `https://ui-avatars.com/api/?name=${s.nama_murid}&background=random`;
+        let finalSrc = imgPath !== "" ? (imgPath.startsWith('http') || imgPath.startsWith('assets/') ? imgPath : `assets/${imgPath}`) : `https://ui-avatars.com/api/?name=${encodeURIComponent(s.nama_murid)}&background=random`;
 
         const slide = document.createElement('div');
         slide.className = 'swiper-slide';
@@ -252,9 +262,11 @@ window.closeProfileOnBackground = function(event) {
 // --- EVENT LISTENERS ---
 document.getElementById('searchInput').addEventListener('input', renderCards);
 document.getElementById('btnResetIndex').addEventListener('click', () => {
-    if (confirm("Reset all?")) { localStorage.removeItem('studentApp_selections'); location.reload(); }
+    if (confirm("Reset all?")) { 
+        localStorage.removeItem('studentApp_selections'); 
+        location.reload(); 
+    }
 });
 
+// Start the app
 init();
-
-
