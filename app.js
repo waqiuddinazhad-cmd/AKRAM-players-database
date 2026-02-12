@@ -1,6 +1,4 @@
-const SHEET_URL = 'https://api.sheetbest.com/sheets/e1c7bffe-6d8c-4c06-b14d-d3ff2179e3d2';
-const TARGET_UNITS = ["Forwards", "Backlines", "Scrum-half", "Multi-role"];
-
+const SHEET_URL = "https://raw.githubusercontent.com/waqiuddinazhad-cmd/AKRAM-players-database/refs/heads/main/data.json";
 let students = [];
 let activeAgeFilters = new Set();
 let activeUnitFilters = new Set();
@@ -8,24 +6,51 @@ let selectionState = JSON.parse(localStorage.getItem('studentApp_selections')) |
 let swiperInstance = null;
 
 // --- INITIALIZATION ---
+// --- INITIALIZATION ---
 async function init() {
     try {
         const res = await fetch(SHEET_URL);
         const data = await res.json();
         
-        students = data.map(s => {
-            let raw = s.unit ? String(s.unit).toLowerCase().trim() : "";
-            let clean = "nounit";
-            if (raw.includes("forward")) clean = "forwards";
-            else if (raw.includes("back")) clean = "backlines";
-            else if (raw.includes("scrum")) clean = "scrum-half";
-            else if (raw.includes("multi")) clean = "multi-role";
+        // Map GitHub (English Keys) -> App (Malay Keys)
+        students = data.map((item, index) => {
+            // 1. Handle Key Variations (Case sensitivity)
+            const name = item.name || item.Name || "Unknown";
+            const nick = item.nickname || item.Nickname || "";
+            const age = String(item.age || item.Age || "0");
+            const rawUnit = String(item.unit || item.Unit || "").toLowerCase().trim();
+            const pos = item.position || item.Position || "N/A";
+            const img = item.image || item.Image || "";
             
+            // 2. Unit Logic
+            let clean = "nounit";
+            if (rawUnit.includes("forward")) clean = "forwards";
+            else if (rawUnit.includes("back")) clean = "backlines";
+            else if (rawUnit.includes("scrum")) clean = "scrum-half";
+            else if (rawUnit.includes("multi")) clean = "multi-role";
+
+            // 3. Return object with YOUR APP'S expected keys
             return {
-                ...s,
+                id: item.id || `p-${index}`,
+                nama_murid: name,           // Maps to s.nama_murid
+                nama_samaran: nick,         // Maps to s.nama_samaran
+                umur: age,                  // Maps to s.umur
                 cleanUnit: clean,
-                displayUnit: s.unit || "No Unit",
-                umur: s.umur ? String(s.umur).trim() : "0"
+                displayUnit: item.unit || item.Unit || "No Unit",
+                position: pos,
+                image: img,
+                
+                // Physical Stats mapping
+                Weight: item.weight || item.Weight || "-",
+                Height: item.height || item.Height || "-",
+                '40m_sprint': item.sprint_40m || item['40m_sprint'] || "-",
+                'T-test': item.t_test || item['T-test'] || "-",
+                bodyweight_deadlift: item.deadlift || item.bodyweight_deadlift || "-",
+
+                // Contact Info mapping
+                nama_penjaga: item.guardian || item.nama_penjaga || "N/A",
+                no_telefon_penjaga: item.guardian_phone || item.no_telefon_penjaga || "",
+                alamat_rumah: item.address || item.alamat_rumah || ""
             };
         });
 
@@ -33,10 +58,9 @@ async function init() {
         renderCards();
     } catch (err) {
         console.error("Fetch Error:", err);
-        document.getElementById('cardContainer').innerHTML = "<p>Failed to load data.</p>";
+        document.getElementById('cardContainer').innerHTML = "<p>Failed to load data from GitHub.</p>";
     }
 }
-
 // --- FILTER SETUP ---
 // --- UPDATED FILTER SETUP ---
 function setupFilters() {
@@ -238,3 +262,4 @@ document.getElementById('btnResetIndex').addEventListener('click', () => {
 });
 
 init();
+
