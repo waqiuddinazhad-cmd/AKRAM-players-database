@@ -9,59 +9,53 @@ let swiperInstance = null;
 // --- INITIALIZATION ---
 async function init() {
     try {
+        console.log("Attempting to fetch from:", SHEET_URL);
         const res = await fetch(SHEET_URL);
-        const data = await res.json();
         
-        // Map GitHub (English Keys) -> App (Malay Keys)
-        students = data.map((item, index) => {
-            // 1. Handle Key Variations (Case sensitivity)
-            const name = item.name || item.Name || "Unknown";
-            const nick = item.nickname || item.Nickname || "";
-            const age = String(item.age || item.Age || "0");
-            const rawUnit = String(item.unit || item.Unit || "").toLowerCase().trim();
-            const pos = item.position || item.Position || "N/A";
-            const img = item.image || item.Image || "";
-            
-            // 2. Unit Logic
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const data = await res.json();
+        console.log("Data successfully received:", data); // Check your console for this!
+
+        // MAPPING: We must ensure GitHub keys match your App's logic
+        students = data.map((s, index) => {
+            // Check for both lowercase and uppercase keys
+            const name = s.name || s.Name || "Unknown";
+            const age = s.age || s.Age || "0";
+            const unit = s.unit || s.Unit || "No Unit";
+
+            let raw = unit.toLowerCase().trim();
             let clean = "nounit";
-            if (rawUnit.includes("forward")) clean = "forwards";
-            else if (rawUnit.includes("back")) clean = "backlines";
-            else if (rawUnit.includes("scrum")) clean = "scrum-half";
-            else if (rawUnit.includes("multi")) clean = "multi-role";
-
-            // 3. Return object with YOUR APP'S expected keys
+            if (raw.includes("forward")) clean = "forwards";
+            else if (raw.includes("back")) clean = "backlines";
+            else if (raw.includes("scrum")) clean = "scrum-half";
+            else if (raw.includes("multi")) clean = "multi-role";
+            
             return {
-                id: item.id || `p-${index}`,
-                nama_murid: name,           // Maps to s.nama_murid
-                nama_samaran: nick,         // Maps to s.nama_samaran
-                umur: age,                  // Maps to s.umur
+                ...s,
+                nama_murid: name,
+                nama_samaran: s.nickname || s.Nickname || name,
                 cleanUnit: clean,
-                displayUnit: item.unit || item.Unit || "No Unit",
-                position: pos,
-                image: img,
-                
-                // Physical Stats mapping
-                Weight: item.weight || item.Weight || "-",
-                Height: item.height || item.Height || "-",
-                '40m_sprint': item.sprint_40m || item['40m_sprint'] || "-",
-                'T-test': item.t_test || item['T-test'] || "-",
-                bodyweight_deadlift: item.deadlift || item.bodyweight_deadlift || "-",
-
-                // Contact Info mapping
-                nama_penjaga: item.guardian || item.nama_penjaga || "N/A",
-                no_telefon_penjaga: item.guardian_phone || item.no_telefon_penjaga || "",
-                alamat_rumah: item.address || item.alamat_rumah || ""
+                displayUnit: unit,
+                umur: String(age).trim()
             };
         });
 
+        console.log("Mapped Students:", students);
         setupFilters();
         renderCards();
+
     } catch (err) {
-        console.error("Fetch Error:", err);
-        document.getElementById('cardContainer').innerHTML = "<p>Failed to load data from GitHub.</p>";
+        console.error("DETAILED ERROR:", err);
+        document.getElementById('cardContainer').innerHTML = `
+            <div style="text-align:center; padding:20px; color:red;">
+                <p>⚠️ Failed to load data.</p>
+                <small>${err.message}</small>
+            </div>`;
     }
-}
-// --- FILTER SETUP ---
+}// --- FILTER SETUP ---
 // --- UPDATED FILTER SETUP ---
 function setupFilters() {
     // 1. Handle Age Chips
@@ -262,4 +256,5 @@ document.getElementById('btnResetIndex').addEventListener('click', () => {
 });
 
 init();
+
 
