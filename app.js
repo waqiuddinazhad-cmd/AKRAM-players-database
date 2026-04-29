@@ -20,14 +20,9 @@ async function init() {
         const data = await res.json();
         console.log("Data successfully received:", data);
 
-        // MAPPING: Translating GitHub keys to App keys
+        // Map the data EXACTLY as it comes from your JSON (Malay keys intact)
         students = data.map((s, index) => {
-            // Mapping English keys from JSON to Malay keys used in your UI
-            const name = s.name || s.Name || "Unknown";
-            const age = s.age || s.Age || "0";
-            const unit = s.unit || s.Unit || "No Unit";
-
-            let raw = unit.toLowerCase().trim();
+            let raw = s.unit ? String(s.unit).toLowerCase().trim() : "";
             let clean = "nounit";
             if (raw.includes("forward")) clean = "forwards";
             else if (raw.includes("back")) clean = "backlines";
@@ -35,21 +30,11 @@ async function init() {
             else if (raw.includes("multi")) clean = "multi-role";
             
             return {
-                ...s, // Keep all original data
-                nama_murid: name,
-                nama_samaran: s.nickname || s.Nickname || name,
+                ...s, // This keeps ALL your original columns perfectly intact!
+                id: s.id || `p-${index}`,
                 cleanUnit: clean,
-                displayUnit: unit,
-                umur: String(age).trim(),
-                // Ensuring physical stats match the Profile Modal expectations
-                Weight: s.weight || s.Weight || "-",
-                Height: s.height || s.Height || "-",
-                '40m_sprint': s['40m_sprint'] || s.sprint_40m || "-",
-                'T-test': s['T-test'] || s.t_test || "-",
-                bodyweight_deadlift: s.bodyweight_deadlift || s.deadlift || "-",
-                nama_penjaga: s.nama_penjaga || s.guardian || "N/A",
-                no_telefon_penjaga: s.no_telefon_penjaga || s.guardian_phone || "",
-                alamat_rumah: s.alamat_rumah || s.address || ""
+                displayUnit: s.unit || "No Unit",
+                umur: s.umur ? String(s.umur).trim() : "0"
             };
         });
 
@@ -62,7 +47,6 @@ async function init() {
             <div style="text-align:center; padding:20px; color:red;">
                 <p>⚠️ Failed to load data from GitHub.</p>
                 <small>${err.message}</small>
-                <p style="font-size: 0.7rem; color: #666; margin-top:10px;">Check if your Repo is PUBLIC.</p>
             </div>`;
     }
 }
@@ -112,7 +96,7 @@ function renderCards() {
     container.innerHTML = '';
 
     const filtered = students.filter(s => {
-        const matchesSearch = s.nama_murid.toLowerCase().includes(search) || (s.nama_samaran || "").toLowerCase().includes(search);
+        const matchesSearch = (s.nama_murid || "").toLowerCase().includes(search) || (s.nama_samaran || "").toLowerCase().includes(search);
         const matchesAge = activeAgeFilters.size === 0 || activeAgeFilters.has(s.umur);
         const matchesUnit = activeUnitFilters.size === 0 || activeUnitFilters.has(s.cleanUnit);
         return matchesSearch && matchesAge && matchesUnit;
@@ -122,27 +106,30 @@ function renderCards() {
 
     filtered.forEach(s => {
         const card = document.createElement('div');
-        const status = selectionState[s.nama_murid.toUpperCase()] || 'available';
+        const safeNamaMurid = s.nama_murid || "UNKNOWN";
+        const safeNamaSamaran = s.nama_samaran || safeNamaMurid;
+        
+        const status = selectionState[safeNamaMurid.toUpperCase()] || 'available';
         card.className = `student-card ${status}`;
         
-        let imgPath = s.image ? s.image.trim() : "";
-        let finalSrc = imgPath !== "" ? (imgPath.startsWith('http') || imgPath.startsWith('assets/') ? imgPath : `assets/${imgPath}`) : `https://ui-avatars.com/api/?name=${encodeURIComponent(s.nama_murid)}&background=random`;
+        let imgPath = s.image ? String(s.image).trim() : "";
+        let finalSrc = imgPath !== "" ? (imgPath.startsWith('http') || imgPath.startsWith('assets/') ? imgPath : `assets/${imgPath}`) : `https://ui-avatars.com/api/?name=${encodeURIComponent(safeNamaMurid)}&background=random`;
 
         card.innerHTML = `
-            <div class="expand-btn" onclick="event.stopPropagation(); openProfile('${s.nama_murid}')">+</div>
+            <div class="expand-btn" onclick="event.stopPropagation(); openProfile('${safeNamaMurid.replace(/'/g, "\\'")}')">+</div>
             <img src="${finalSrc}" class="student-image" onerror="this.src='https://via.placeholder.com/150?text=No+Photo'">
             <div class="card-info">
-                <div class="nickname">${(s.nama_samaran || s.nama_murid).toUpperCase()}</div>
-                <div class="realname">${s.nama_murid.toUpperCase()}</div>
+                <div class="nickname">${safeNamaSamaran.toUpperCase()}</div>
+                <div class="realname">${safeNamaMurid.toUpperCase()}</div>
                 <div class="class-unit">${s.displayUnit} • ${s.umur}YO</div>
             </div>
         `;
 
         card.onclick = () => {
-            const currentStatus = selectionState[s.nama_murid.toUpperCase()] || 'available';
-            if (currentStatus === 'available') selectionState[s.nama_murid.toUpperCase()] = 'selected';
-            else if (currentStatus === 'selected') selectionState[s.nama_murid.toUpperCase()] = 'reserved';
-            else delete selectionState[s.nama_murid.toUpperCase()];
+            const currentStatus = selectionState[safeNamaMurid.toUpperCase()] || 'available';
+            if (currentStatus === 'available') selectionState[safeNamaMurid.toUpperCase()] = 'selected';
+            else if (currentStatus === 'selected') selectionState[safeNamaMurid.toUpperCase()] = 'reserved';
+            else delete selectionState[safeNamaMurid.toUpperCase()];
             
             localStorage.setItem('studentApp_selections', JSON.stringify(selectionState));
             renderCards();
@@ -158,23 +145,24 @@ window.openProfile = function(playerName) {
     
     const currentViewList = students.filter(s => {
         const search = document.getElementById('searchInput').value.toLowerCase();
-        const matchesSearch = s.nama_murid.toLowerCase().includes(search) || (s.nama_samaran || "").toLowerCase().includes(search);
+        const matchesSearch = (s.nama_murid || "").toLowerCase().includes(search) || (s.nama_samaran || "").toLowerCase().includes(search);
         const matchesAge = activeAgeFilters.size === 0 || activeAgeFilters.has(s.umur);
         const matchesUnit = activeUnitFilters.size === 0 || activeUnitFilters.has(s.cleanUnit);
         return matchesSearch && matchesAge && matchesUnit;
     });
 
     currentViewList.forEach(s => {
+        const safeNamaMurid = s.nama_murid || "UNKNOWN";
         const w = parseFloat(s.Weight) || 0;
         const h = parseFloat(s.Height) / 100 || 0;
         const bmi = (w > 0 && h > 0) ? (w / (h * h)).toFixed(1) : "-";
         
         let rawPhone = String(s.no_telefon_penjaga || "").replace(/\D/g,'');
         if (rawPhone.startsWith('0')) rawPhone = '6' + rawPhone;
-        const waLink = `https://wa.me/${rawPhone}?text=Salam,%20saya%20jurulatih%20ragbi%20${s.nama_murid}`;
+        const waLink = `https://wa.me/${rawPhone}?text=Salam,%20saya%20jurulatih%20ragbi%20${encodeURIComponent(safeNamaMurid)}`;
         
-        let imgPath = s.image ? s.image.trim() : "";
-        let finalSrc = imgPath !== "" ? (imgPath.startsWith('http') || imgPath.startsWith('assets/') ? imgPath : `assets/${imgPath}`) : `https://ui-avatars.com/api/?name=${encodeURIComponent(s.nama_murid)}&background=random`;
+        let imgPath = s.image ? String(s.image).trim() : "";
+        let finalSrc = imgPath !== "" ? (imgPath.startsWith('http') || imgPath.startsWith('assets/') ? imgPath : `assets/${imgPath}`) : `https://ui-avatars.com/api/?name=${encodeURIComponent(safeNamaMurid)}&background=random`;
 
         const slide = document.createElement('div');
         slide.className = 'swiper-slide';
@@ -183,8 +171,8 @@ window.openProfile = function(playerName) {
                 <div class="profile-header-main">
                     <img src="${finalSrc}" onerror="this.src='https://via.placeholder.com/150?text=No+Photo'">
                     <div>
-                        <h2 style="font-size: 1.8rem; margin:0;">${s.nama_murid.toUpperCase()}</h2>
-                        <p style="color:#f59e0b; font-weight:800; font-size:1rem; margin-top:5px;">${(s.position || "N/A").toUpperCase()}</p>
+                        <h2 style="font-size: 1.8rem; margin:0;">${safeNamaMurid.toUpperCase()}</h2>
+                        <p style="color:#f59e0b; font-weight:800; font-size:1rem; margin-top:5px;">${(s.position || s.Position || "N/A").toUpperCase()}</p>
                     </div>
                 </div>
                 <div class="stats-container">
@@ -199,14 +187,14 @@ window.openProfile = function(playerName) {
                     <div class="profile-section">
                         <div class="section-label">Performance Metrics</div>
                         <div class="data-grid-3">
-                            <div class="data-item"><span class="data-val">${s['40m_sprint'] || '-'}s</span><span class="data-lbl">Sprint</span></div>
-                            <div class="data-item"><span class="data-val">${s['T-test'] || '-'}s</span><span class="data-lbl">T-Test</span></div>
-                            <div class="data-item"><span class="data-val">${s.bodyweight_deadlift || '-'}kg</span><span class="data-lbl">Deadlift</span></div>
+                            <div class="data-item"><span class="data-val">${s['40m_sprint'] || s.sprint_40m || '-'}s</span><span class="data-lbl">Sprint</span></div>
+                            <div class="data-item"><span class="data-val">${s['T-test'] || s.t_test || '-'}s</span><span class="data-lbl">T-Test</span></div>
+                            <div class="data-item"><span class="data-val">${s.bodyweight_deadlift || s.deadlift || '-'}kg</span><span class="data-lbl">Deadlift</span></div>
                         </div>
                     </div>
                 </div>
                 <div class="guardian-info-section" style="background: #f8fafc; padding: 15px; border-radius: 12px;">
-                    <div style="font-weight: 800; margin-bottom: 10px;">👤 ${s.nama_penjaga || 'N/A'}</div>
+                    <div style="font-weight: 800; margin-bottom: 10px;">👤 ${s.nama_penjaga || s.guardian || 'N/A'}</div>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <a href="tel:${s.no_telefon_penjaga}" class="btn-summary" style="flex:1; text-align:center; text-decoration:none;">📞 Call</a>
                         <a href="${waLink}" target="_blank" class="btn-summary" style="flex:1; text-align:center; background:#25d366; text-decoration:none;">💬 WhatsApp</a>
@@ -222,8 +210,10 @@ window.openProfile = function(playerName) {
 
     document.getElementById('profileModal').style.display = 'flex';
     if (swiperInstance) swiperInstance.destroy();
+    
+    const index = currentViewList.findIndex(p => p.nama_murid === playerName);
     swiperInstance = new Swiper(".mySwiper", {
-        initialSlide: currentViewList.findIndex(p => p.nama_murid === playerName),
+        initialSlide: index !== -1 ? index : 0,
         spaceBetween: 20,
         pagination: { el: ".swiper-pagination", clickable: true },
     });
@@ -262,11 +252,11 @@ window.closeProfileOnBackground = function(event) {
 // --- EVENT LISTENERS ---
 document.getElementById('searchInput').addEventListener('input', renderCards);
 document.getElementById('btnResetIndex').addEventListener('click', () => {
-    if (confirm("Reset all?")) { 
+    if (confirm("Reset all selections?")) { 
         localStorage.removeItem('studentApp_selections'); 
         location.reload(); 
     }
 });
 
-// Start the app
+// Start the App
 init();
